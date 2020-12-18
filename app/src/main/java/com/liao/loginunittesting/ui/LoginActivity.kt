@@ -18,7 +18,7 @@ import kotlinx.android.synthetic.main.activity_login.*
 
 class LoginActivity : AppCompatActivity() {
     lateinit var loginViewModel: LoginViewModel
-    lateinit var callbackManager:CallbackManager
+    lateinit var callbackManager: CallbackManager
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
@@ -29,13 +29,17 @@ class LoginActivity : AppCompatActivity() {
 
     private fun init() {
         button.setOnClickListener {
-            val name:String = edit_text_name.text.toString()
-            val password:String = edit_text_password.text.toString()
+            val name: String = edit_text_name.text.toString()
+            val password: String = edit_text_password.text.toString()
             loginViewModel.loginButtonClicked(name, password)
         }
 
-        loginViewModel.getLiveData().observe(this){
+
+        loginViewModel.getLiveData().observe(this) {
             Toast.makeText(this, it, Toast.LENGTH_SHORT).show()
+            if (it == "Success") {
+                startActivity(Intent(this@LoginActivity, HomeActivity::class.java))
+            }
         }
 
         callbackManager = CallbackManager.Factory.create();
@@ -65,20 +69,25 @@ class LoginActivity : AppCompatActivity() {
             object : FacebookCallback<LoginResult?> {
                 override fun onSuccess(loginResult: LoginResult?) {
                     // App code
-                    Toast.makeText(this@LoginActivity,loginResult!!.accessToken.userId.toString(),Toast.LENGTH_SHORT).show()
-                Log.d("LiaoTag",loginResult!!.accessToken.userId.toString())
+                    Toast.makeText(
+                        this@LoginActivity,
+                        loginResult!!.accessToken.userId.toString(),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    Log.d("LiaoTag", loginResult!!.accessToken.userId.toString())
+                    startActivity(Intent(this@LoginActivity, HomeActivity::class.java))
                 }
 
                 override fun onCancel() {
                     // App code
-                    Toast.makeText(this@LoginActivity,"cancel",Toast.LENGTH_SHORT).show()
-                Log.d("LiaoTag","cancel")
+                    Toast.makeText(this@LoginActivity, "cancel", Toast.LENGTH_SHORT).show()
+                    Log.d("LiaoTag", "cancel")
                 }
 
                 override fun onError(exception: FacebookException) {
                     // App code
-                    Toast.makeText(this@LoginActivity,"error",Toast.LENGTH_SHORT).show()
-                Log.d("LiaoTag","error")
+                    Toast.makeText(this@LoginActivity, "error", Toast.LENGTH_SHORT).show()
+                    Log.d("LiaoTag", "error")
                 }
             })
     }
